@@ -1,0 +1,1 @@
+Defines the data structures and validation schemas (e.g., using Pydantic). It ensures that the data coming from the View is strictly formatted (slug, lat, lon) before allowing it into the system.
