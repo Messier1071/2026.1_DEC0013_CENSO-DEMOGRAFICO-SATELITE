@@ -1,0 +1,1 @@
+print(f"Hello from {__package__}")
