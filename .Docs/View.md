@@ -1,2 +1,1 @@
-Requests data from the controller, can also request old requests from Database
-
+The graphical user interface built with Tkinter. It is strictly for presentation and user interaction. It DOES NOT communicate with the database directly. All data requests and submissions are sent to the Controller's API endpoints via HTTP.

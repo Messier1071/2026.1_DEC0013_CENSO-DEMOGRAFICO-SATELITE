@@ -1,1 +1,1 @@
-receives requests for a house count, saves it to db and returns image and data
+The orchestrator of the system. It receives API requests from the View, interacts with the Database to save/retrieve search history, and will coordinate the Machine Learning and Computer Vision pipelines to estimate demographic density from satellite images.

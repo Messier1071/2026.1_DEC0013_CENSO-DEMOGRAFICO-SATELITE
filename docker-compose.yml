@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  api-backend:
+    build: .
+    container_name: servidor-fastapi
+    ports:
+      - "8000:8000" # Conecta a porta 8000 do seu Arch na porta 8000 do container
+    volumes:
+      - ./:/app # MAGIA: Espelha a sua pasta física para dentro do container
+    restart: unless-stopped
