@@ -49,3 +49,19 @@ def find_search_by_term(term: str) -> list:
     conn.close()
     
     return results
+
+def get_all_history() -> list:
+    """Busca todo o histórico de pesquisas salvo no banco de dados."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    
+    # Selecionamos as colunas essenciais para mostrar na tela
+    cursor.execute(
+        "SELECT slug, lat_tl, lon_tl, lat_br, lon_br FROM search_history"
+    )
+    
+    # fetchall() vai retornar uma lista de tuplas: [('slug1', -28.9, ...), ('slug2', ...)]
+    results = cursor.fetchall()
+    conn.close()
+    
+    return results
