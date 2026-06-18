@@ -34,7 +34,7 @@ def setup_db():
     conn.commit()
     conn.close() 
 
-### create da search_history
+### CREATE
 def save_search(slug: str, lat_tl: float, lon_tl: float, lat_br: float, lon_br: float) -> int:
     """Recebe o slug e os 4 pontos, faz a inserção e RETORNA o ID gerado."""
     conn = sqlite3.connect(DB_NAME)
@@ -54,7 +54,6 @@ def save_search(slug: str, lat_tl: float, lon_tl: float, lat_br: float, lon_br: 
     
     return inserted_id
 
-### create da search_results
 def save_result(search_id: int, population: int, population_density: float) -> None:
     """Salva os resultados vinculados ao ID da pesquisa original."""
     conn = sqlite3.connect(DB_NAME)
@@ -72,8 +71,8 @@ def save_result(search_id: int, population: int, population_density: float) -> N
     conn.commit()
     conn.close()
 
-### reads da search_history
-def find_search_by_term(term: str) -> list:
+### READ
+def get_search_by_term(term: str) -> list:
     """Busca no banco todas as slugs que contêm o termo digitado."""
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
@@ -103,3 +102,35 @@ def get_all_history() -> list:
     conn.close()
     
     return results
+
+def get_result_by_id(search_id: int) -> tuple:
+    """Busca os resultados de população e densidade usando o ID da pesquisa correspondente."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    
+    cursor.execute(
+        "SELECT population, population_density FROM search_results WHERE id = ?",
+        (search_id,)
+    )
+    
+    # fetchone() traz apenas a primeira linha encontrada (já que o ID é único)
+    # Se não encontrar nada, ele retorna None
+    result = cursor.fetchone() 
+    conn.close()
+    
+    return result
+
+### DELETE 
+def delete_search(search_id: int) -> None:
+    """Deleta uma pesquisa do histórico e seus resultados em cascata."""
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.cursor()
+    
+    # O PRAGMA é absolutamente obrigatório aqui. 
+    # Sem ele, o SQLite não ativa o gatilho do CASCADE para limpar a search_results.
+    cursor.execute("PRAGMA foreign_keys = ON;")
+    
+    cursor.execute("DELETE FROM search_history WHERE id = ?", (search_id,))
+    
+    conn.commit()
+    conn.close()

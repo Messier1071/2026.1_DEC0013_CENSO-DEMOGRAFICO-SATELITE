@@ -3,36 +3,49 @@
 
 ### TODO:
 
-- [ ] Implement all tables and respective CRUDs
-  - [ ] Implement `search_history` table
+- [x] Implement all tables and respective CRUDs
+  - [x] Implement `search_history` table
     - [x] create (`save_search()`)
     - [x] read (both `find_search_by_term()` and `get_all_history()`)
-    - [ ] delete
-  - [ ] Implement `search_results` table
+    - [x] delete
+  - [x] Implement `search_results` table
     - [x] create
-    - [ ] read
-    - [ ] update
-    - [ ] ~~delete~~ RequestData should only be deleted when the associated request is deleted, so implement this in RequestData's delete function!
+    - [x] read
+    - [x] delete
 
-### current tables:
+<br>
 
-```
-Tablename: 
-- search_history
-Fields:
-- id INTEGER PRIMARY KEY AUTOINCREMENT,
-- slug   STRING
-- lat_tl REAL
-- lon_tl REAL
-- lat_br REAL
-- lon_br REAL
+---
 
-Tablename:
-- request_data
-Fields:
-- id INTEGER PK FK // if you can you have a primary key be a foreign key otherwise split these up!
-- population    INTEGER
-- pop_density   REAL
-... TODO: ADD ANYTHING ELSE REQUIRED!
-```
+### Notes:
+* did not implement update due to lack of need.
+* deleting a record in the `search_history` table triggers a `CASCADE`, automatically removing the corresponding record in `search_results`.
 
+<br>
+
+---
+
+### Current tables:
+
+### `search_history`
+Stores the metadata and bounding box coordinates of each search.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `INTEGER` | **Primary Key (PK)**. Auto increment. |
+| `slug` | `TEXT` | Friendly identifier or search date/time. |
+| `lat_tl` | `REAL` | Latitude of the Top-Left point. |
+| `lon_tl` | `REAL` | Longitude of the Top-Left point. |
+| `lat_br` | `REAL` | Latitude of the Bottom-Right point. |
+| `lon_br` | `REAL` | Longitude of the Bottom-Right point. |
+
+<br>
+
+### `search_results`
+Stores the mathematical calculations and predictions tied to a specific search.
+
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | `INTEGER` | **Primary Key (PK)** and **Foreign Key (FK)**. References `search_history(id)`. Ensures the 1:1 relationship. |
+| `population` | `INTEGER` | Estimated total number of inhabitants in the area. |
+| `population_density` | `REAL` | Calculated population density (inhab/km²). |
