@@ -2,6 +2,6 @@ backend api that requests images from google and filters them through the machin
 
 # TODO
 - [ ] Get Image
-- [ ] use the model on the image
-- [ ] use results for calculation
-- [ ] save sata to db and return to frontend
+- [x] use the model on the image
+- [x] use results for calculation
+- [x] save sata to db and return to frontend
