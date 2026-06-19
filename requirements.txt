@@ -1,4 +1,5 @@
 python-dotenv
+tkintermapview
 inference-sdk
 requests
 opencv-python
