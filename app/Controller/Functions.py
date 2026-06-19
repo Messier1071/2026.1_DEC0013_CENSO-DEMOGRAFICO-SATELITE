@@ -4,14 +4,22 @@ import requests
 import datetime
 from pathlib import Path
 from dotenv import load_dotenv
+import cv2
+import numpy as np
+import json
+
+
+
+from Model.databaseModel import save_result,save_search
+from inference_sdk import InferenceHTTPClient
+
 
 from app.Controller import C_shared
-
 from app.Model import databaseModel
 
 def debug_print(message):
     if C_shared.DEBUG:
-        print(message)
+        print("[DEBUG]"+message)
 
 def create_media_folders():
     raw = Path(C_shared.FILEPATH+"raw")
@@ -95,10 +103,93 @@ def get_map_image(lat_tl,lon_tl,lat_br,lon_br) -> None:
 
     image_path = get_satellite_image(center_lat, center_lon, slug,zoom)
 
-    searchID = databaseModel.save_search(slug,lat_tl,lon_tl,lat_br,lon_br)
+    id_search = save_search(slug,lat_tl,lon_tl,lat_br,lon_br)
+    process_and_save_vision_data(id_search,image_path,square_side_size)
+
+def make_annotated_image(image_path: str, predictions: list) -> None:
+    img = cv2.imread(image_path)
+    debug_print(f"annotating {image_path}")
+
+    for pred in predictions:
+        pts = np.array(
+            [[p["x"], p["y"]] for p in pred["points"]],
+            dtype=np.int32
+        )
+
+        cv2.polylines(
+            img,
+            [pts],
+            isClosed=True,
+            color=(0, 255, 0),
+            thickness=2
+        )
+
+    filename =image_path.removeprefix("./media/raw/").removesuffix(".png")
 
 
+    fp = f"{C_shared.FILEPATH}processed/{filename}.png"
+    debug_print(f"Annotated {fp} successfully")
+    cv2.imwrite(fp, img)
+
+def get_population_from_image(image_path: str) -> int:
+    """Envia a imagem para a IA, conta os telhados, e retorna a estimativa de população."""
+    client = InferenceHTTPClient(
+        api_url="https://serverless.roboflow.com",
+        api_key=C_shared.ROBOFLOW_API_KEY
+    )
+
+    result = client.run_workflow(
+        workspace_name="ian-martins-mendes",
+        workflow_id="general-segmentation-api-6",
+        images={
+            "image": image_path  # Path recebido como argumento
+        },
+        parameters={"classes": "roof"},
+        use_cache=True,  # cache workflow definition for 15 minutes
+    )
+    predictions = result[0]["predictions"]["predictions"]
+    total_houses = len(predictions)
+    population = total_houses * 3
+
+    make_annotated_image(image_path,predictions)
+
+    debug_print(f"Imagem: {image_path} | Casas: {total_houses} | População: {population}")
+
+    return population
 
 
+def get_searched_area(width_m: float) -> float:
+    """Recebe a largura do mapa em metros e calcula a área total em km²."""
+    # converte de metros para km e calcula a area do quadrado
+    searched_area = (width_m * 0.001) ** 2
+
+    debug_print(f"Largura do mapa: {width_m}m | Área pesquisada: {searched_area:.6f} km²")
+
+    return searched_area
+
+
+def get_population_density(population: int, searched_area: float) -> float:
+    """Recebe a população estimada e a área (em km²) e cospe densidade populacional."""
+    population_density = population / searched_area
+
+    debug_print(f"População: {population} hab | Área: {searched_area:.6f} km² | Densidade: {population_density:.2f} hab/km²")
+
+    return population_density
+
+
+def process_and_save_vision_data(search_id: int, image_path: str, width_m: float) -> tuple:
+    """Consulta a IA, calcula tudo que tem que calcular e salva os resultados no banco de dados."""
+
+    debug_print(f"\nIniciando processamento para o ID {search_id}...")
+
+    population = get_population_from_image(image_path)
+    searched_area = get_searched_area(width_m)
+    population_density = get_population_density(population, searched_area)
+
+    save_result(search_id, population, population_density)
+
+    debug_print("Fluxo de Visão Computacional e Banco de Dados finalizado com sucesso!\n")
+
+    return population, searched_area, population_density
 
 

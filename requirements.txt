@@ -1,1 +1,5 @@
 python-dotenv
+inference-sdk
+requests
+opencv-python
+numpy
