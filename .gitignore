@@ -212,7 +212,7 @@ __marimo__/
 *.sqlite3
 
 
-
+.tool-versions
 .obsidian/
 .idea/
 media/
