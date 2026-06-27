@@ -1,34 +1,58 @@
 import tkinter as tk
 import tkintermapview
-from controller.Functions import debug_print
+from controller.Functions import debug_print, get_map_image
+from pathlib import Path
+from PIL import Image, ImageTk
 
 
 class DetailView(tk.Toplevel):
     """A secondary window that accepts arguments."""
 
-    def __init__(self, parent, username, user_id):
+    def __init__(self, parent, slug):
         super().__init__(parent)
         self.title("Detail View")
-        self.geometry("250x150")
+        self.geometry("1000x600")
+        self.configure(bg="#B0E0E6")
+
+
+
+        self.frame_lateral = tk.LabelFrame(self, width=250, bg="#ADD8E6")
+        self.frame_lateral.pack(side="right", fill="y", pady=(20, 15), padx=(0, 20))
+        self.frame_lateral.pack_propagate(False)
+
+        self.frame_text = tk.Frame(self.frame_lateral, bg="#ADD8E6")
+        self.frame_text.pack(expand=True)
+        #todo GET DATA FROM THE DATABASE!
+
+
+        # -------------------------------------------------
+        tk.Label(self.frame_text, text=f"Latitude 1:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+
+        tk.Label(self.frame_text, text=f"Longitude 1:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+
+        tk.Label(self.frame_text, text=f"Latitude 2:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+
+        tk.Label(self.frame_text, text=f"Longitude 2:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+
+
+        self.image_container = tk.LabelFrame(self,width=250,bg="#FFD8E6")
+        self.image_container.pack(padx=(20, 20), pady=(20, 15), side="left", fill="both", expand=True)
 
         # Using the passed arguments
-        tk.Label(self, text=f"ID: {user_id}").pack(pady=10)
-        tk.Label(self, text=f"Welcome, {username}!").pack(pady=10)
+        # tk.Label(self, text=f"ID: {slug}").pack(pady=10)
+
+        fp = f"media/processed/{slug}.png"
+
+        img = Image.open(fp)
+        self.rawphoto = ImageTk.PhotoImage(img)
 
 
-class MainApplication(tk.Tk):
-    def __init__(self):
-        super().__init__()
-        self.title("Main Window")
-        self.geometry("300x200")
+        self.image= tk.Label(self.image_container,image=self.rawphoto)
+        self.image.pack()
 
-        # Lambda prevents immediate execution and forwards the args
-        open_btn = tk.Button(
-            self,
-            text="Open Detail View",
-            command=lambda: DetailView(self, username="pen", user_id=404)
-        )
-        open_btn.pack(expand=True)
+
+
+
 
 class MainMapWindow(tk.Tk):
     def __init__(self):
@@ -120,11 +144,26 @@ class MainMapWindow(tk.Tk):
         debug_print("main window ready")
 
     def search_selection(self):
-        debug_print("attempting to make new request")
+        debug_print("attempting to make new request") #todo: remove
+        DetailView(parent=self, slug="-28.9499992 -49.4664249 18 1782445693")
+        return
         if hasattr(self, 'poligono_selecao') and self.poligono_selecao:
             debug_print("has selection")
         else:
             debug_print("selection missing, aborting")
+            return
+        # todo warn this is dangerous and can break EASILY
+        lat1 = float(self.set_lat1.get())
+        lon1 = float(self.set_lon1.get())
+        lat2 = float(self.set_lat2.get())
+        lon2 = float(self.set_lon2.get())
+
+        slug = get_map_image(lat1,lon1,lat2,lon2)
+
+        DetailView(parent=self, slug=slug)
+
+
+
 
 
 
@@ -227,6 +266,9 @@ class MainMapWindow(tk.Tk):
             self.map_widget.canvas.delete(self.rect_id)
             self.rect_id = None
 
+        self.selection_marker.delete()
+        self.selection_marker = None
+
         self.set_lat1.delete(0, tk.END)
         self.set_lon1.delete(0, tk.END)
         self.set_lat2.delete(0, tk.END)
@@ -235,6 +277,7 @@ class MainMapWindow(tk.Tk):
         print("Marcação e coordenadas apagadas com sucesso.")
         # TODO:  Line 115 maybe remove anyway
 
+    #todo lock coordinate editing when selection exists
 
 
 

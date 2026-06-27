@@ -73,7 +73,7 @@ def get_satellite_image(lat, lon,slug, zoom) -> str:
     return fp
 
 
-def get_map_image(lat_tl,lon_tl,lat_br,lon_br) -> None:
+def get_map_image(lat_tl,lon_tl,lat_br,lon_br) -> str:
     center_lat = (lat_tl+lat_br) / 2
     center_lon = (lon_tl + lon_br) / 2
 
@@ -107,6 +107,8 @@ def get_map_image(lat_tl,lon_tl,lat_br,lon_br) -> None:
 
     id_search = save_search(slug,lat_tl,lon_tl,lat_br,lon_br)
     process_and_save_vision_data(id_search,image_path,square_side_size)
+
+    return slug
 
 def make_annotated_image(image_path: str, predictions: list) -> None:
     img = cv2.imread(image_path)

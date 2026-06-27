@@ -1,6 +1,6 @@
 import sqlite3
 
-DB_NAME = "search_history.sqlite"
+DB_NAME = "./database/search_history.sqlite"
 
 def setup_db():
     """Cria as tabelas de histórico e resultados se elas ainda não existirem."""
