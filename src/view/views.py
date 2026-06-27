@@ -1,0 +1,247 @@
+import tkinter as tk
+import tkintermapview
+from controller.Functions import debug_print
+
+
+class DetailView(tk.Toplevel):
+    """A secondary window that accepts arguments."""
+
+    def __init__(self, parent, username, user_id):
+        super().__init__(parent)
+        self.title("Detail View")
+        self.geometry("250x150")
+
+        # Using the passed arguments
+        tk.Label(self, text=f"ID: {user_id}").pack(pady=10)
+        tk.Label(self, text=f"Welcome, {username}!").pack(pady=10)
+
+
+class MainApplication(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.title("Main Window")
+        self.geometry("300x200")
+
+        # Lambda prevents immediate execution and forwards the args
+        open_btn = tk.Button(
+            self,
+            text="Open Detail View",
+            command=lambda: DetailView(self, username="pen", user_id=404)
+        )
+        open_btn.pack(expand=True)
+
+class MainMapWindow(tk.Tk):
+    def __init__(self):
+        debug_print("setting up main window")
+        super().__init__()
+        self.title("Main Window")
+        self.geometry("1000x600")
+
+        self.configure(bg="#B0E0E6")
+        self.start_x = None
+        self.start_y = None
+        self.rect_id = None
+
+        self.poligono_selecao = None
+        self.selection_marker = None
+
+        self.frame_lateral = tk.LabelFrame( width=250, bg="#ADD8E6")
+        self.frame_lateral.pack(side="right", fill="y", pady=(20, 15), padx=(0, 20))
+        self.frame_lateral.pack_propagate(False)
+
+        self.frame_text = tk.Frame(self.frame_lateral, bg="#ADD8E6")
+        self.frame_text.pack(expand=True)
+
+        # -------------------------------------------------
+        tk.Label(self.frame_text, text="Latitude 1:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        self.set_lat1 = tk.Entry(self.frame_text, justify="center")
+        self.set_lat1.pack(pady=(0, 5))
+
+        tk.Label(self.frame_text, text="Longitude 1:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        self.set_lon1 = tk.Entry(self.frame_text, justify="center")
+        self.set_lon1.pack(pady=(0, 5))
+
+        tk.Label(self.frame_text, text="Latitude 2:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        self.set_lat2 = tk.Entry(self.frame_text, justify="center")
+        self.set_lat2.pack(pady=(0, 5))
+
+        tk.Label(self.frame_text, text="Longitude 2:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        self.set_lon2 = tk.Entry(self.frame_text, justify="center")
+        self.set_lon2.pack(pady=(0, 10))
+
+        self.button_marcar = tk.Button(self.frame_text, text="Selecionar Região",
+                                       command=self.capturar_entradas_e_desenhar)
+        self.button_marcar.pack(pady=(0, 10))
+
+        self.button_remove = tk.Button(self.frame_text, text="Apagar marcação", command= self.limpar_marcacao)
+        self.button_remove.pack(pady=(0, 100))
+
+        self.button_confirm = tk.Button(self.frame_text, text="pesquisar", command= self.search_selection)
+        self.button_confirm.pack(pady=(0, 100))
+
+        # -------------------------------------------------
+        # -------------------------------------------------
+
+        # self.button_area = tk.Button(self.frame_text, text="Selecionar Area", command=self.ativar_selecao)
+        # self.button_area.pack(pady=(0,50))
+
+        # Entradas de Texto
+        tk.Label(self.frame_text, text="Latitude:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        self.set_lat = tk.Entry(self.frame_text, justify="center")
+        self.set_lat.pack(pady=(0, 5))
+
+        tk.Label(self.frame_text, text="Longitude:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        self.set_long = tk.Entry(self.frame_text, justify="center")
+        self.set_long.pack(pady=(0, 5))
+
+        # Botão
+        self.button_search = tk.Button(self.frame_text, text="Buscar Coordenadas", command=self.get_cords)
+        self.button_search.pack()
+
+
+        # --- Mapa ---
+        self.map_label = tk.LabelFrame( width=250)
+        self.map_label.pack(padx=(20, 20), pady=(20, 15), side="left", fill="both", expand=True)
+
+        self.map_widget = tkintermapview.TkinterMapView(self.map_label, width=1000, height=800)
+        self.map_widget.set_tile_server("https://mt0.google.com/vt/lyrs=y&hl=pt-BR&x={x}&y={y}&z={z}&s=Ga")
+        self.map_widget.set_position(-28.9510156, -49.4678388)  # Posição inicial (UFSC-Ararangua)
+        self.map_widget.set_zoom(18)
+        self.map_widget.pack(fill="both", expand=True)
+
+        self.map_widget.add_right_click_menu_command(label="Add Marker 1 (top left)",
+                                                command=lambda coords: self.add_marker_event(coords,1),
+                                                pass_coords=True)
+        self.map_widget.add_right_click_menu_command(label="Add Marker 2 (bottom right)",
+                                                command=lambda coords: self.add_marker_event(coords,2),
+                                                pass_coords=True)
+
+
+        debug_print("main window ready")
+
+    def search_selection(self):
+        debug_print("attempting to make new request")
+        if hasattr(self, 'poligono_selecao') and self.poligono_selecao:
+            debug_print("has selection")
+        else:
+            debug_print("selection missing, aborting")
+
+
+
+
+
+
+
+    def add_marker_event(self,coords,id):
+        debug_print(f"coordinate selected {id}: {coords}")
+        if id == 1:
+            self.set_lat1.delete(0, tk.END)
+            self.set_lat1.insert(0, str(coords[0]))
+            self.set_lon1.delete(0, tk.END)
+            self.set_lon1.insert(0, str(coords[1]))
+        else:
+            self.set_lat2.delete(0, tk.END)
+            self.set_lat2.insert(0, str(coords[0]))
+            self.set_lon2.delete(0, tk.END)
+            self.set_lon2.insert(0, str(coords[1]))
+
+
+    def get_cords(self):
+        debug_print("moving map to set coords")
+        lat_text = self.set_lat.get()
+        lon_text = self.set_long.get()
+
+        try:
+            lat = float(lat_text)
+            long = float(lon_text)
+
+            self.map_widget.set_position(lat, long)
+            self.map_widget.set_zoom(12)
+            # map_widget.set_marker(lat, long, text="Nova posição")
+        except ValueError:
+            print("Por favor, digite apenas números válidos")
+            # TODO: throw error popup, user feedback should not rely on the terminal
+
+    def desenhar_regiao_geografica(self, lat1, lon1, lat2, lon2):
+        debug_print("drawing selection")
+        if hasattr(self, 'poligono_selecao') and self.poligono_selecao:
+            self.poligono_selecao.delete()
+
+        ponto_superior_esquerdo = (lat1, lon1)
+        ponto_superior_direito = (lat1, lon2)
+        ponto_inferior_direito = (lat2, lon2)
+        ponto_inferior_esquerdo = (lat2, lon1)
+
+        # make selection a square (more accurate to what google actually requests
+        cent_lat = (lat1+lat2)/2
+        cent_lon = (lon1+lon2)/2
+
+        if self.selection_marker is not None:
+            self.selection_marker.delete()
+            self.selection_marker = None
+
+
+        self.selection_marker = self.map_widget.set_marker(cent_lat, cent_lon, text="center")
+
+
+        selection_path = [
+            ponto_superior_esquerdo,
+            ponto_superior_direito,
+            ponto_inferior_direito,
+            ponto_inferior_esquerdo
+        ]
+
+        self.poligono_selecao = self.map_widget.set_polygon(
+            selection_path,
+            fill_color=None,  # Sem preenchimento interno (transparente)
+            outline_color="red",  # Cor da borda do quadrado
+            border_width=3,  # Espessura da linha
+            name="regiao_marcada"
+        )
+
+
+
+
+    def capturar_entradas_e_desenhar(self):
+        debug_print("getting selection data")
+        try:
+            lat1 = float(self.set_lat1.get())
+            lon1 = float(self.set_lon1.get())
+            lat2 = float(self.set_lat2.get())
+            lon2 = float(self.set_lon2.get())
+
+            self.desenhar_regiao_geografica(lat1, lon1, lat2, lon2)
+
+        except ValueError:
+            print(
+                "Erro de digitação: Certifique-se de preencher todos os campos apenas com números e usar ponto (ex: -27.59) em vez de vírgula.")
+            # TODO:  Line 115
+
+    def limpar_marcacao(self):
+        debug_print("delete selection")
+        if hasattr(self, 'poligono_selecao') and self.poligono_selecao:
+            self.poligono_selecao.delete()
+            self.poligono_selecao = None
+
+        if hasattr(self, 'rect_id') and self.rect_id:
+            self.map_widget.canvas.delete(self.rect_id)
+            self.rect_id = None
+
+        self.set_lat1.delete(0, tk.END)
+        self.set_lon1.delete(0, tk.END)
+        self.set_lat2.delete(0, tk.END)
+        self.set_lon2.delete(0, tk.END)
+
+        print("Marcação e coordenadas apagadas com sucesso.")
+        # TODO:  Line 115 maybe remove anyway
+
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    app = MainMapWindow()
+    app.mainloop()

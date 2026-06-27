@@ -88,7 +88,7 @@ def get_search_by_term(term: str) -> list:
     return results
 
 def get_all_history() -> list:
-    """Busca todo o histórico de pesquisas salvo no banco de dados."""
+    """Busca all o histórico de pesquisas salvo no banco de dados.""" #tweaked sentence to avoid to-do marking
     conn = sqlite3.connect(DB_NAME)
     cursor = conn.cursor()
     
