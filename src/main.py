@@ -1,6 +1,8 @@
-from controller.Functions import *
+from controller.Functions import setup_api_keys
 from model.databaseModel import setup_db
-from view.views import MainMapWindow
+from view.views import MainMapWindow,DetailView
+from src.controller.C_shared import debug_print
+
 
 setup_db()
 setup_api_keys()
@@ -9,7 +11,14 @@ setup_api_keys()
 
 #tela_default.start_window_loop()
 
+
+debug_print("Program is in debug mode, to disable it set DEBUG = false in src/controller/C_shared.py")
 debug_print("HELLO WORLD!")
+debug_print("Testing Detail view")
+
+
+
+
 app = MainMapWindow()
 app.mainloop()
 

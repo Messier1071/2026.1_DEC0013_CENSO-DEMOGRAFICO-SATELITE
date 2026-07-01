@@ -35,7 +35,7 @@ Problemas comuns e soluções
 projeto-software/
 ├── README.md
 ├── LICENSE
-├── .env                        # chaves de api
+├── .env                        # chaves de api. Usuario precisa criar e adicionar suas proprias
 ├── .gitignore
 ├── .venv/                      # bibliotecas *
 ├── docs/

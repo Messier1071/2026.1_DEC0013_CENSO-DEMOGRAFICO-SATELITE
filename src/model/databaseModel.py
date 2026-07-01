@@ -1,10 +1,24 @@
 import sqlite3
+from pathlib import Path
 
-DB_NAME = "./database/search_history.sqlite"
+import controller
+from controller import C_shared
+from controller.C_shared import debug_print
+
+DB_NAME = "search_history.sqlite"
+
+
+def create_db_folder():
+    db = Path(C_shared.DB_FILEPATH)
+    if not db.is_dir():
+        db.mkdir(parents=True, exist_ok=True)
+        debug_print("created db folders")
+
 
 def setup_db():
+    create_db_folder()
     """Cria as tabelas de histórico e resultados se elas ainda não existirem."""
-    conn = sqlite3.connect(DB_NAME)
+    conn = sqlite3.connect(C_shared.DB_FILEPATH+DB_NAME)
     cursor = conn.cursor()
     
     cursor.execute("PRAGMA foreign_keys = ON;")

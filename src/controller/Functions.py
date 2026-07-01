@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import cv2
 import numpy as np
 import json
-
+from controller.C_shared import debug_print
 
 
 from model.databaseModel import save_result,save_search
@@ -17,13 +17,11 @@ from inference_sdk import InferenceHTTPClient
 from controller import C_shared
 from model import databaseModel
 
-def debug_print(message):
-    if C_shared.DEBUG:
-        print("[DEBUG]"+str(message))
+
 
 def create_media_folders():
-    raw = Path(C_shared.FILEPATH+"raw")
-    processed = Path(C_shared.FILEPATH+"processed")
+    raw = Path(C_shared.IMG_FILEPATH+"raw")
+    processed = Path(C_shared.IMG_FILEPATH+"processed")
     if not raw.is_dir():
         raw.mkdir(parents=True, exist_ok=True)
     if not processed.is_dir():
