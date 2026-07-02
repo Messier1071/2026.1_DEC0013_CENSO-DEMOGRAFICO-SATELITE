@@ -92,14 +92,13 @@ def get_search_by_term(term: str) -> list:
     cursor = conn.cursor()
 
     cursor.execute(
-        "SELECT id,slug FROM search_history WHERE slug LIKE ?",
+        "SELECT * FROM search_history WHERE slug LIKE ?",
         (f"%{term}%",)
     )
-    
-    results = [row[0] for row in cursor.fetchall()]
+    data = cursor.fetchall()  # changed this to pass more data in
+    results = data[0]
     conn.close()
-    
-    return results
+    return data
 
 def get_all_history() -> list:
     """Busca all o histórico de pesquisas salvo no banco de dados.""" #tweaked sentence to avoid to-do marking

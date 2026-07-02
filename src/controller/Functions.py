@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import cv2
 import numpy as np
 import json
-from controller.C_shared import debug_print
+from controller.C_shared import debug_print,get_center
 
 
 from model.databaseModel import save_result,save_search
@@ -34,11 +34,11 @@ def setup_api_keys() -> None:
     C_shared.ROBOFLOW_API_KEY = os.getenv("ROBOFLOW_API_KEY")
 
 
-    if C_shared.GOOGLE_API_KEY == None or C_shared.GOOGLE_API_KEY == "":
+    if C_shared.GOOGLE_API_KEY is None or C_shared.GOOGLE_API_KEY == "":
         raise ValueError("Missing GOOGLE_MAPS_API_KEY in .env or system environment values")
     else:
         debug_print("GOOGLE API key loaded successfully")
-    if C_shared.ROBOFLOW_API_KEY == None or C_shared.ROBOFLOW_API_KEY == "":
+    if C_shared.ROBOFLOW_API_KEY is None or C_shared.ROBOFLOW_API_KEY == "":
         raise ValueError("Missing ROBOFLOW_API_KEY in .env or system environment values")
     else:
         debug_print("roboflow key loaded successfully")
@@ -58,7 +58,7 @@ def get_satellite_image(lat, lon,slug, zoom) -> str:
     response = requests.get(url, params=params)
 
     create_media_folders()
-    fp = f"{C_shared.FILEPATH}raw/{slug}.png"
+    fp = f"{C_shared.IMG_FILEPATH}raw/{slug}.png"
     if response.status_code == 200:
         with open(fp, "wb") as f:
             f.write(response.content)
@@ -71,9 +71,10 @@ def get_satellite_image(lat, lon,slug, zoom) -> str:
     return fp
 
 
+
+
 def get_map_image(lat_tl,lon_tl,lat_br,lon_br) -> str:
-    center_lat = (lat_tl+lat_br) / 2
-    center_lon = (lon_tl + lon_br) / 2
+    center_lat,center_lon = get_center(lat_tl,lon_tl,lat_br,lon_br)
 
     debug_print(f"{lat_tl},{lon_tl}")
     debug_print(f"{lat_br},{lon_br}")
@@ -129,7 +130,7 @@ def make_annotated_image(image_path: str, predictions: list) -> None:
     filename =image_path.removeprefix("./media/raw/").removesuffix(".png")
 
 
-    fp = f"{C_shared.FILEPATH}processed/{filename}.png"
+    fp = f"{C_shared.IMG_FILEPATH}processed/{filename}.png"
     debug_print(f"Annotated {fp} successfully")
     cv2.imwrite(fp, img)
 

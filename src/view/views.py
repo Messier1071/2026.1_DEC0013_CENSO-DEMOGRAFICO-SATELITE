@@ -1,5 +1,7 @@
 import tkinter as tk
 import tkintermapview
+
+from controller.C_shared import get_center
 from controller.Functions import debug_print, get_map_image
 from pathlib import Path
 from PIL import Image, ImageTk
@@ -12,36 +14,49 @@ class DetailView(tk.Toplevel):
     def __init__(self, parent, slug):
         super().__init__(parent)
         self.title("Detail View")
-        self.geometry("1000x600")
+        self.geometry("833x558")
         self.configure(bg="#B0E0E6")
-
+        self.data = {"ID":-1,"SLUG":"","TL_LAT":0.0, "TL_LON":0.0, "BR_LAT":0.0, "BR_LON":0.0, "CENT":0.0}
 
 
         self.frame_lateral = tk.LabelFrame(self, width=250, bg="#ADD8E6")
         self.frame_lateral.pack(side="right", fill="y", pady=(20, 15), padx=(0, 20))
         self.frame_lateral.pack_propagate(False)
 
-        self.frame_text = tk.Frame(self.frame_lateral, bg="#ADD8E6")
+        self.frame_text = tk.Frame(self.frame_lateral, bg="#ADD8E6",)
         self.frame_text.pack(expand=True)
-        #todo GET DATA FROM THE DATABASE!
         search_data = get_search_by_term(slug)
-        debug_print(search_data)
 
+        self.data["ID"],self.data["SLUG"],self.data["TL_LAT"],self.data["TL_LON"],self.data["BR_LAT"],self.data["BR_LON"] = search_data[0]
+
+        center_lat,center_lon  = get_center(self.data["TL_LAT"],self.data["TL_LON"],self.data["BR_LAT"],self.data["BR_LON"])
+        self.data["CENT"] = f"{center_lat}\n{center_lon}"
+        debug_print("[id]")
+        debug_print(self.data["ID"])
+
+        specific_data = get_result_by_id(search_id=int(self.data["ID"]))
+        debug_print("[pop, pop/km]")
+        debug_print(specific_data)
         # -------------------------------------------------
-        tk.Label(self.frame_text, text=f"Latitude 1:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        tk.Label(self.frame_text, text=f"Latitude 1: {self.data["TL_LAT"]}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
-        tk.Label(self.frame_text, text=f"Longitude 1:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        tk.Label(self.frame_text, text=f"Longitude 1: {self.data["TL_LON"]}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
-        tk.Label(self.frame_text, text=f"Latitude 2:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        tk.Label(self.frame_text, text=f"Latitude 2: {self.data["BR_LAT"]}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
-        tk.Label(self.frame_text, text=f"Longitude 2:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        tk.Label(self.frame_text, text=f"Longitude 2: {self.data["BR_LON"]}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
+
+        tk.Label(self.frame_text, text=f"Center:\n {self.data["CENT"]}", justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+
+        tk.Label(self.frame_text, text=f"Estimativa populacional: {specific_data[0]}", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
+
+        tk.Label(self.frame_text, text=f"Densidade populacional aproximada:\n {specific_data[1]}", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
 
         self.image_container = tk.LabelFrame(self,width=250,bg="#FFD8E6")
         self.image_container.pack(padx=(20, 20), pady=(20, 15), side="left", fill="both", expand=True)
 
-        # Using the passed arguments
-        # tk.Label(self, text=f"ID: {slug}").pack(pady=10)
+
 
         fp = f"media/processed/{slug}.png"
 
@@ -51,6 +66,11 @@ class DetailView(tk.Toplevel):
 
         self.image= tk.Label(self.image_container,image=self.rawphoto)
         self.image.pack()
+    #     self.bind("<Configure>", self.on_resize)
+    # def on_resize(self,event):
+    #     # CRITICAL: Filter out sub-widget resize events
+    #     print(f"Window resized to: {event.width}x{event.height}")
+    #     debug_print(event)
 
 
 
@@ -61,7 +81,7 @@ class MainMapWindow(tk.Tk):
         debug_print("setting up main window")
         super().__init__()
         self.title("Main Window")
-        self.geometry("1000x600")
+        self.geometry("1000x650")
 
         self.configure(bg="#B0E0E6")
         self.start_x = None
@@ -142,19 +162,17 @@ class MainMapWindow(tk.Tk):
                                                 command=lambda coords: self.add_marker_event(coords,2),
                                                 pass_coords=True)
 
-
+        # self.bind("<Configure>", self.on_resize)
         debug_print("main window ready")
 
     def search_selection(self):
         debug_print("attempting to make new request")
-        DetailView(parent=self, slug="-28.949159083073894 -49.46303477113079 18 1782570457")#todo: remove
-        return
         if hasattr(self, 'poligono_selecao') and self.poligono_selecao:
             debug_print("has selection")
         else:
             debug_print("selection missing, aborting")
             return
-        # todo warn this is dangerous and can break EASILY
+        #warn this is dangerous and can break EASILY
         lat1 = float(self.set_lat1.get())
         lon1 = float(self.set_lon1.get())
         lat2 = float(self.set_lat2.get())
@@ -163,6 +181,11 @@ class MainMapWindow(tk.Tk):
         slug = get_map_image(lat1,lon1,lat2,lon2)
 
         DetailView(parent=self, slug=slug)
+
+    # def on_resize(self,event):
+    #     # CRITICAL: Filter out sub-widget resize events
+    #     print(f"Window resized to: {event.width}x{event.height}")
+    #     debug_print(event)
 
 
 
