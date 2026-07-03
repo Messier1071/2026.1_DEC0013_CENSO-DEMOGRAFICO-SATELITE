@@ -1,0 +1,1 @@
+# check if .venv exists otherwise throw error

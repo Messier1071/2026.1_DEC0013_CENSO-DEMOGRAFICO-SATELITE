@@ -4,9 +4,7 @@
 Breve descrição do projeto (2-3 parágrafos)
 
 ## Requisitos de Software 
-- Linguagem e Frameworks utilizados
-- Versões específicas de bibliotecas
-- Links para documentação
+- Python, Tkinter e Google Maps static api
 
 ## Configuração do Ambiente
 - Versões de IDE/toolchain
@@ -14,15 +12,21 @@ Breve descrição do projeto (2-3 parágrafos)
 - Passo a passo de configuração
 
 ## Como Usar
-- Instruções de upload
-- Configurações necessárias
-- Exemplos de uso
+- InstalaçãoÇ
+  1. clone o repo do github 
+  ~~2. execute o *script* de instalação setup.py~~
+  2. crie um *virtual environment* `python -m venv .venv`
+  3. execute `.\.venv\Scripts\activate`(windows) ou `commando linux aqui`
+  4. `pip install -r .\scripts\requirements.txt`
+  5. `python .\src\main.py`
+- é necessária uma chave da api do Google e roboflow
+
 
 ## Estrutura do Projeto
-Explicação da organização dos arquivos
+O código foi separado em tres partes para simplificar o codesenvolvimento, Model lida com o banco de dados, view lida com a *interface* de usuário e controller interage com APIs externas
 
 ## Troubleshooting
-Problemas comuns e soluções
+TODO
 
 ## Contribuidores
 - Ian Martins Mendes (23205319) - Organização e Machine Learning
