@@ -1,11 +1,12 @@
 import tkinter as tk
 import tkintermapview
 
-from controller.C_shared import get_center
-from controller.Functions import debug_print, get_map_image
+from tkinter import ttk, Scrollbar
+from src.controller.C_shared import get_center
+from src.controller.Functions import debug_print, get_map_image
 from pathlib import Path
 from PIL import Image, ImageTk
-from model.databaseModel import get_search_by_term,get_all_history,get_result_by_id
+from src.model.databaseModel import get_search_by_term,get_all_history,get_result_by_id
 
 
 class DetailView(tk.Toplevel):
@@ -98,6 +99,8 @@ class MainMapWindow(tk.Tk):
         self.frame_text = tk.Frame(self.frame_lateral, bg="#ADD8E6")
         self.frame_text.pack(expand=True)
 
+        
+
         # -------------------------------------------------
         tk.Label(self.frame_text, text="Latitude 1:", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
         self.set_lat1 = tk.Entry(self.frame_text, justify="center")
@@ -120,10 +123,13 @@ class MainMapWindow(tk.Tk):
         self.button_marcar.pack(pady=(0, 10))
 
         self.button_remove = tk.Button(self.frame_text, text="Apagar marcação", command= self.limpar_marcacao)
-        self.button_remove.pack(pady=(0, 100))
+        self.button_remove.pack(pady=(0, 40))
 
         self.button_confirm = tk.Button(self.frame_text, text="pesquisar", command= self.search_selection)
-        self.button_confirm.pack(pady=(0, 100))
+        self.button_confirm.pack(pady=(0, 40))
+
+        self.button_relat = tk.Button(self.frame_text, text="relatorio", command= self.relatorio)
+        self.button_relat.pack(pady=(0, 40))
 
         # -------------------------------------------------
         # -------------------------------------------------
@@ -189,7 +195,8 @@ class MainMapWindow(tk.Tk):
 
 
 
-
+    def relatorio(self):
+        Relatorio(parent=self)
 
 
 
@@ -303,13 +310,93 @@ class MainMapWindow(tk.Tk):
         # TODO:  Line 115 maybe remove anyway
 
     #todo lock coordinate editing when selection exists
+    
 
 
 
 
+class Relatorio(tk.Toplevel):
+    print("chamou relatorio")
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Relatorio")
+        self.geometry("833x558")
+        self.configure(bg="#B0E0E6")
 
 
+        self.frames_da_tela()
+        self.lista_frame2()
 
+
+        dados_recebidos = get_all_history()
+       # dados_recebidos =  [
+         #   (1, -28.9344, -49.4958, -28.6760, -49.3723), # Araranguá -> Criciúma
+         #   (2, -27.5969, -48.5495, -28.4820, -49.0061), # Floripa -> Tubarão
+         #   (3, -29.0084, -49.5638, -26.3044, -48.8456), # Sombrio -> Joinville
+         #   (4, -28.9344, -49.4958, -30.0346, -51.2177), # Araranguá -> Porto Alegre
+        #    (5, -25.4284, -49.2733, -27.5969, -48.5495), # Curitiba -> Floripa
+        #    (6, -28.2612, -49.1601, -28.9344, -49.4958), # Laguna -> Araranguá
+         #   (7, -26.9109, -49.0661, -27.5969, -48.5495)  # Blumenau -> Floripa
+        #]
+        self.preencher_lista(dados_recebidos)
+
+    def frames_da_tela(self):
+        self.frame_2 = tk.Frame(self, bd=4, bg='#dfe3ee',
+                             highlightbackground='#759fe6', highlightthickness=3)
+        self.frame_2.pack(fill="both", expand=True)
+
+    def lista_frame2(self):
+        self.listaCli = ttk.Treeview(self.frame_2, height=3,
+                                     column=("col1", "col2", "col3", "col4","col5"))
+        self.listaCli.heading("#0", text="")
+        self.listaCli.heading("#1", text="Longitude")
+        self.listaCli.heading("#2", text="Latitude")
+        self.listaCli.heading("#3", text="Longitude")
+        self.listaCli.heading("#4", text="Latitude")
+        self.listaCli.column("#0", width=1)
+        self.listaCli.column("#1", width=100)
+        self.listaCli.column("#2", width=100)
+        self.listaCli.column("#3", width=100)
+        self.listaCli.column("#4", width=100)
+        self.listaCli.place(relx=0.01, rely=0.1, relwidth=0.95, relheight=0.85)
+
+        self.scroolLista = Scrollbar(self.frame_2, orient="vertical")
+        self.listaCli.configure(yscroll=self.scroolLista.set)
+        self.scroolLista.place(relx=0.96, rely=0.1, relwidth=0.01, relheight=0.85)
+
+        self.listaCli.bind("<Double-1>", self.click_list)
+
+    def preencher_lista(self, dados):
+        
+        for linha_antiga in self.listaCli.get_children():
+            self.listaCli.delete(linha_antiga)
+
+       
+        for registro in dados:
+            self.listaCli.insert("", "end", values=registro)
+
+    def click_list(self, event):
+
+        selecionado = self.listaCli.selection()
+
+        if not selecionado:
+            return
+        
+
+        valores_da_linha = self.listaCli.item(selecionado[0], "values")
+
+        lat1 = valores_da_linha[1]
+        lon1 = valores_da_linha[2]
+        lat2 = valores_da_linha[3]
+        lon2 =valores_da_linha[4]
+
+        print(f"O sistema vai processar o cliente {lat1} de código {lon1}!")
+
+        slug = get_map_image(lat1,lon1,lat2,lon2)
+
+        DetailView(parent=self, slug=slug)
+
+       
 if __name__ == "__main__":
     app = MainMapWindow()
     app.mainloop()
