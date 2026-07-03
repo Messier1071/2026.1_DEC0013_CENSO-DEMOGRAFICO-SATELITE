@@ -2,11 +2,11 @@ import tkinter as tk
 import tkintermapview
 
 from tkinter import ttk, Scrollbar
-from src.controller.C_shared import get_center
-from src.controller.Functions import debug_print, get_map_image
+from controller.C_shared import get_center
+from controller.Functions import debug_print, get_map_image
 from pathlib import Path
 from PIL import Image, ImageTk
-from src.model.databaseModel import get_search_by_term,get_all_history,get_result_by_id
+from model.databaseModel import get_search_by_term,get_all_history,get_result_by_id
 
 
 class DetailView(tk.Toplevel):
@@ -39,15 +39,15 @@ class DetailView(tk.Toplevel):
         debug_print("[pop, pop/km]")
         debug_print(specific_data)
         # -------------------------------------------------
-        tk.Label(self.frame_text, text=f"Latitude 1: {self.data["TL_LAT"]}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
+        tk.Label(self.frame_text, text=f"Latitude 1: {self.data['TL_LAT']}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
-        tk.Label(self.frame_text, text=f"Longitude 1: {self.data["TL_LON"]}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
+        tk.Label(self.frame_text, text=f"Longitude 1: {self.data['TL_LON']}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
-        tk.Label(self.frame_text, text=f"Latitude 2: {self.data["BR_LAT"]}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
+        tk.Label(self.frame_text, text=f"Latitude 2: {self.data['BR_LAT']}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
-        tk.Label(self.frame_text, text=f"Longitude 2: {self.data["BR_LON"]}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
+        tk.Label(self.frame_text, text=f"Longitude 2: {self.data['BR_LON']}", anchor="w",justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
-        tk.Label(self.frame_text, text=f"Center:\n {self.data["CENT"]}", justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
+        tk.Label(self.frame_text, text=f"Center:\n {self.data['CENT']}", justify="left",bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 2))
 
         tk.Label(self.frame_text, text=f"Estimativa populacional: {specific_data[0]}", bg="#ADD8E6", font=("Arial", 9, "bold")).pack(pady=(0, 1))
 
@@ -316,7 +316,7 @@ class MainMapWindow(tk.Tk):
 
 
 class Relatorio(tk.Toplevel):
-    print("chamou relatorio")
+    debug_print("chamou relatorio")
     def __init__(self, parent):
         super().__init__(parent)
         self.title("Relatorio")
@@ -329,15 +329,6 @@ class Relatorio(tk.Toplevel):
 
 
         dados_recebidos = get_all_history()
-       # dados_recebidos =  [
-         #   (1, -28.9344, -49.4958, -28.6760, -49.3723), # Araranguá -> Criciúma
-         #   (2, -27.5969, -48.5495, -28.4820, -49.0061), # Floripa -> Tubarão
-         #   (3, -29.0084, -49.5638, -26.3044, -48.8456), # Sombrio -> Joinville
-         #   (4, -28.9344, -49.4958, -30.0346, -51.2177), # Araranguá -> Porto Alegre
-        #    (5, -25.4284, -49.2733, -27.5969, -48.5495), # Curitiba -> Floripa
-        #    (6, -28.2612, -49.1601, -28.9344, -49.4958), # Laguna -> Araranguá
-         #   (7, -26.9109, -49.0661, -27.5969, -48.5495)  # Blumenau -> Floripa
-        #]
         self.preencher_lista(dados_recebidos)
 
     def frames_da_tela(self):

@@ -1,7 +1,7 @@
 from controller.Functions import setup_api_keys
 from model.databaseModel import setup_db
 from view.views import MainMapWindow,DetailView
-from src.controller.C_shared import debug_print
+from controller.C_shared import debug_print
 
 
 setup_db()

@@ -4,7 +4,7 @@
 Breve descrição do projeto (2-3 parágrafos)
 
 ## Requisitos de Software 
-- Python, Tkinter e Google Maps static api
+- Python3.11, Tkinter e Google Maps static api
 
 ## Configuração do Ambiente
 - Versões de IDE/toolchain
@@ -32,7 +32,8 @@ TODO
 - Ian Martins Mendes (23205319) - Organização e Machine Learning
 - Lucas Rodrigues da Silva (21205137) - banco de dados e backend de integração
 - Pedro Otavio Vaz Alcantara (24103218) - Machine Learning e visão computacional
-- Andre de Souza da Costa (23104086) - 
+- Andre de Souza da Costa (23104086) - Interface grafica
+ 
 
 ## Estrutura do projeto
 ```
