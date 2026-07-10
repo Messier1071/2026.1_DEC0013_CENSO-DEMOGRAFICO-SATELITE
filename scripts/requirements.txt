@@ -4,3 +4,6 @@ requests
 opencv-python
 numpy
 tkintermapview
+opencv-python
+requests
+dotenv

@@ -11,7 +11,8 @@ IF EXIST ".env" (
     pip install -r .\scripts\requirements.txt
     type nul > .env
     echo GOOGLE_MAPS_API_KEY= >> .env
-    echo ROBOFLOW_API_KEY= >> .env
+    echo ROBOFLOW_API_KEY=uyDjfwt8tTfLrodSYAxP >> .env
+    python src/main.py
 )
 pause
 

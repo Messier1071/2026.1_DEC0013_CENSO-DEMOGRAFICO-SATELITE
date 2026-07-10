@@ -105,7 +105,7 @@ def get_map_image(lat_tl,lon_tl,lat_br,lon_br) -> str:
     image_path = get_satellite_image(center_lat, center_lon, slug,zoom)
 
     id_search = save_search(slug,lat_tl,lon_tl,lat_br,lon_br)
-    process_and_save_vision_data(id_search,image_path,square_side_size)
+    process_and_save_vision_data(id_search,image_path,square_side_size, zoom=zoom)
 
     return slug
 
@@ -160,13 +160,40 @@ def get_population_from_image(image_path: str) -> int:
 
     return population
 
+import math
 
-def get_searched_area(width_m: float) -> float:
+def meters_per_pixel(latitude, zoom):
+    return (
+        156543.03392
+        * math.cos(math.radians(latitude))
+        / (2 ** zoom)
+    )
+
+def image_size_meters(latitude, zoom, width_px, height_px):
+    mpp = meters_per_pixel(latitude, zoom)
+
+    return (
+        width_px * mpp,
+        height_px * mpp
+    )
+
+def get_searched_area(width_m: float, zoom) -> float:
     """Recebe a largura do mapa em metros e calcula a área total em km²."""
     # converte de metros para km e calcula a area do quadrado
-    searched_area = (width_m * 0.001) ** 2
 
-    debug_print(f"Largura do mapa: {width_m}m | Área pesquisada: {searched_area:.6f} km²")
+
+    w, h = image_size_meters(
+        latitude=-27.5954,
+        zoom=zoom,
+        width_px=C_shared.IMAGE_SIZE,
+        height_px=C_shared.IMAGE_SIZE
+    )
+
+    searched_area = w ** 2
+
+    debug_print(f"{w:.2f} m × {h:.2f} m")
+
+    debug_print(f"Largura do mapa: {w}m | Área pesquisada: {searched_area:.6f} m²")
 
     return searched_area
 
@@ -180,13 +207,13 @@ def get_population_density(population: int, searched_area: float) -> float:
     return population_density
 
 
-def process_and_save_vision_data(search_id: int, image_path: str, width_m: float) -> tuple:
+def process_and_save_vision_data(search_id: int, image_path: str, width_m: float, zoom: int) -> tuple:
     """Consulta a IA, calcula tudo que tem que calcular e salva os resultados no banco de dados."""
 
     debug_print(f"\nIniciando processamento para o ID {search_id}...")
 
     population = get_population_from_image(image_path)
-    searched_area = get_searched_area(width_m)
+    searched_area = get_searched_area(width_m, zoom=zoom)
     population_density = get_population_density(population, searched_area)
 
     save_result(search_id, population, population_density)

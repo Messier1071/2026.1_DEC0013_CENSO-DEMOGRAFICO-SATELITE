@@ -3,7 +3,7 @@ ROBOFLOW_API_KEY = ""
 IMAGE_SIZE = 512
 IMG_FILEPATH = "./media/"
 DB_FILEPATH = "./database/"
-DEBUG = False
+DEBUG = True
 
 def debug_print(message):
     if DEBUG:
