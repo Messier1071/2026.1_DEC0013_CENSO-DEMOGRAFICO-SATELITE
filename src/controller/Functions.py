@@ -199,8 +199,8 @@ def get_searched_area(width_m: float, zoom) -> float:
 
 
 def get_population_density(population: int, searched_area: float) -> float:
-    """Recebe a população estimada e a área (em km²) e cospe densidade populacional."""
-    population_density = population / searched_area
+    """Recebe a população estimada e a área (em m²) e cospe densidade populacional."""
+    population_density = population / (searched_area/1000000)
 
     debug_print(f"População: {population} hab | Área: {searched_area:.6f} km² | Densidade: {population_density:.2f} hab/km²")
 

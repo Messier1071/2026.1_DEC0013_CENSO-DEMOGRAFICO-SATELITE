@@ -59,7 +59,7 @@ class DetailView(tk.Toplevel):
         tk.Label(group_results, text=f"{specific_data[0]} Habitantes", bg="#2C3E50", fg="#4CAF50", font=("Arial", 10, "bold")).pack(pady=(0, 10))
 
         tk.Label(group_results, text="Densidade Aproximada:", bg="#2C3E50", fg="white", font=("Arial", 9)).pack(pady=(5, 0))
-        tk.Label(group_results, text=f"{specific_data[1]}", bg="#2C3E50", fg="white", font=("Arial", 10, "bold")).pack(pady=(0, 10))
+        tk.Label(group_results, text=f"{specific_data[1]:.4f}", bg="#2C3E50", fg="white", font=("Arial", 10, "bold")).pack(pady=(0, 10))
 
         # Imagem
         self.image_container = tk.LabelFrame(self, bg="#2C3E50", bd=0)
