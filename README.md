@@ -1,4 +1,3 @@
-
 # Censo demográfico via satélite 🛰️🌍
 ## 📖 Visão Geral
 Este projeto é um sistema desktop desenvolvido para estimar a população de uma determinada região geográfica utilizando imagens de satélite. Através da integração com a API estática do Google Maps, o sistema captura recortes do mapa e utiliza modelos de Inteligência Artificial (via Roboflow) para identificar construções e telhados, realizando cálculos demográficos de forma automatizada.
@@ -8,9 +7,9 @@ O código foi separado em três partes principais para simplificar o desenvolvim
 <br>
 
 ## 💻 Pré-requisitos
-* Python 3.11+
+* Python 3.11
 * Biblioteca Tkinter (geralmente incluída na instalação padrão do Python)
-* Chave da API do Google Maps (Static API)
+* Chave da API do Google Maps (Maps Static API)
 * Chave da API do Roboflow (Inference SDK)
 
 <br>
@@ -23,12 +22,7 @@ git clone https://github.com/Messier1071/2026.1_DEC0013_CENSO-DEMOGRAFICO-SATELI
 cd 2026.1_DEC0013_CENSO-DEMOGRAFICO-SATELITE
 ```
 
-**2. Execute o script de instalação:**
-```bash
-python setup.py
-```
-
-**3. Crie e ative um ambiente virtual (virtual environment):**
+**2. Crie e ative um ambiente virtual (virtual environment):**
 ```bash
 python -m venv .venv
 
@@ -39,22 +33,27 @@ python -m venv .venv
 source .venv/bin/activate
 ```
 
-**4. Instale as dependências:**
+**3. Instale as dependências:**
 ```bash
 pip install -r .\scripts\requirements.txt
 ```
 
-**5. Configure as chaves de API:**
+**4. Configure as chaves de API:**
 Crie um arquivo `.env` na raiz do projeto e adicione as suas chaves:
 ```env
 GOOGLE_MAPS_API_KEY=sua_chave_aqui
 ROBOFLOW_API_KEY=sua_chave_aqui
 ```
 
-**6. Execute a aplicação:**
+**5. Execute a aplicação:**
 ```bash
 python .\src\main.py
 ```
+
+## 📚 Tutorial de Uso
+Quer ver o sistema em ação na prática? Preparamos um guia passo a passo completo para o ajudar a realizar a sua primeira estimativa demográfica, desde a seleção das coordenadas da área até à visualização final dos resultados gerados pela IA.
+
+👉 **[Clique aqui para acessar o Tutorial de Uso](docs/tutorial.md)**
 
 <br>
 
