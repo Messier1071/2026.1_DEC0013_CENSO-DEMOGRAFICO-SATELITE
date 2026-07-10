@@ -1,43 +1,66 @@
-# Censo demográfico via satélite
 
-## Visão Geral
-Breve descrição do projeto (2-3 parágrafos)
+# Censo demográfico via satélite 🛰️🌍
+## 📖 Visão Geral
+Este projeto é um sistema desktop desenvolvido para estimar a população de uma determinada região geográfica utilizando imagens de satélite. Através da integração com a API estática do Google Maps, o sistema captura recortes do mapa e utiliza modelos de Inteligência Artificial (via Roboflow) para identificar construções e telhados, realizando cálculos demográficos de forma automatizada.
 
-## Requisitos de Software 
-- Python3.11, Tkinter e Google Maps static api
+O código foi separado em três partes principais para simplificar o desenvolvimento (arquitetura MVC): o **Model** lida com a persistência no banco de dados, o **View** lida com a interface de usuário e o **Controller** interage com as APIs externas e processamento de dados.
 
-## Configuração do Ambiente
-- Versões de IDE/toolchain
-- Dependências e bibliotecas
-- Passo a passo de configuração
+<br>
 
-## Como Usar
-- InstalaçãoÇ
-  1. clone o repo do github 
-  ~~2. execute o *script* de instalação setup.py~~
-  2. crie um *virtual environment* `python -m venv .venv`
-  3. execute `.\.venv\Scripts\activate`(windows) ou `commando linux aqui`
-  4. `pip install -r .\scripts\requirements.txt`
-  5. `python .\src\main.py`
-- é necessária uma chave da api do Google e roboflow
+## 💻 Pré-requisitos
+* Python 3.11+
+* Biblioteca Tkinter (geralmente incluída na instalação padrão do Python)
+* Chave da API do Google Maps (Static API)
+* Chave da API do Roboflow (Inference SDK)
 
+<br>
 
-## Estrutura do Projeto
-O código foi separado em tres partes para simplificar o codesenvolvimento, Model lida com o banco de dados, view lida com a *interface* de usuário e controller interage com APIs externas
+## 🚀 Configuração do Ambiente e Como Rodar
 
-## Troubleshooting
-TODO
-
-## Contribuidores
-- Ian Martins Mendes (23205319) - Organização e Machine Learning
-- Lucas Rodrigues da Silva (21205137) - banco de dados e backend de integração
-- Pedro Otavio Vaz Alcantara (24103218) - Machine Learning e visão computacional
-- Andre de Souza da Costa (23104086) - Interface grafica
- 
-
-## Estrutura do projeto
+**1. Clone o repositório do GitHub:**
+```bash
+git clone https://github.com/Messier1071/2026.1_DEC0013_CENSO-DEMOGRAFICO-SATELITE.git
+cd 2026.1_DEC0013_CENSO-DEMOGRAFICO-SATELITE
 ```
-projeto-software/
+
+**2. Execute o script de instalação:**
+```bash
+python setup.py
+```
+
+**3. Crie e ative um ambiente virtual (virtual environment):**
+```bash
+python -m venv .venv
+
+# No Windows:
+.\.venv\Scripts\activate
+
+# No Linux/macOS:
+source .venv/bin/activate
+```
+
+**4. Instale as dependências:**
+```bash
+pip install -r .\scripts\requirements.txt
+```
+
+**5. Configure as chaves de API:**
+Crie um arquivo `.env` na raiz do projeto e adicione as suas chaves:
+```env
+GOOGLE_MAPS_API_KEY=sua_chave_aqui
+ROBOFLOW_API_KEY=sua_chave_aqui
+```
+
+**6. Execute a aplicação:**
+```bash
+python .\src\main.py
+```
+
+<br>
+
+## 📂 Estrutura do Projeto
+```text
+2026.1_DEC0013_CENSO-DEMOGRAFICO-SATELITE/
 ├── README.md
 ├── LICENSE
 ├── .env                        # chaves de api. Usuario precisa criar e adicionar suas proprias
@@ -61,8 +84,18 @@ projeto-software/
 ├── database/
 │   └──  search_history.sqlite  # *
 └── examples/
-
-* criado pelo script de instalação ou em tempo de execução
 ```
+*\* Criado pelo script de instalação ou em tempo de execução.*
 
-# TODO: refactor code to new standard
+<br>
+
+## 🐛 Troubleshooting
+* **TODO**
+
+<br>
+
+## 👥 Contribuidores
+* **Ian Martins Mendes** (23205319) - Organização e Machine Learning
+* **Lucas Rodrigues da Silva** (21205137) - Banco de dados e backend de integração
+* **Pedro Otavio Vaz Alcantara** (24103218) - Machine Learning e visão computacional
+* **Andre de Souza da Costa** (23104086) - Interface gráfica e UX
